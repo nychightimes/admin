@@ -79,10 +79,14 @@ export default function ImageUploader({
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Upload failed');
+        console.error('Upload failed:', errorData);
+        throw new Error(errorData.error || errorData.details || 'Upload failed');
       }
 
-      const { url } = await response.json();
+      const data = await response.json();
+      console.log('Upload successful:', data);
+      
+      const { url } = data;
       onImageUpload(url);
       
       // Clean up preview URL
@@ -91,7 +95,8 @@ export default function ImageUploader({
 
     } catch (error) {
       console.error('Error uploading image:', error);
-      alert(`Error uploading image: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      alert(`Failed to upload ${file.name}. ${errorMessage}`);
       setPreview(currentImage || null);
     } finally {
       setUploading(false);
