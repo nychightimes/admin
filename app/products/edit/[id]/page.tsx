@@ -656,12 +656,18 @@ export default function EditProduct() {
       }
 
       // Create new variant objects for the new combinations
+      // Use existing variant price as default, fallback to base price, then 0
+      const existingPrices = variantData?.variants.map(v => v.price).filter(p => p > 0) || [];
+      const defaultPrice = existingPrices.length > 0
+        ? existingPrices[0]
+        : parseFloat(formData.price || '0');
+
       const newVariants = newCombinations.map(combo => {
         const title = Object.entries(combo).map(([key, value]) => `${key}: ${value}`).join(', ');
         return {
           title,
           attributes: combo,
-          price: parseFloat(formData.price || '0'),
+          price: defaultPrice,
           comparePrice: null,
           costPrice: null,
           sku: '',

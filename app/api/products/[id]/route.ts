@@ -146,7 +146,7 @@ export async function PUT(
           productId: id,
           title: variant.title,
           sku: variant.sku || null,
-          price: variant.price ? variant.price.toString() : productData.price,
+          price: (variant.price != null && variant.price !== '') ? variant.price.toString() : (productData.price || '0'),
           comparePrice: variant.comparePrice ? variant.comparePrice.toString() : null,
           costPrice: variant.costPrice ? variant.costPrice.toString() : null,
           weight: variant.weight ? variant.weight.toString() : null,
