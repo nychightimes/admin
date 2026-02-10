@@ -20,7 +20,7 @@ export async function GET(
       return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
 
-    // Get all variants for this product
+    // Get ALL variants for this product (including inactive ones for admin editing)
     const variants = await db
       .select({
         id: productVariants.id,
@@ -34,14 +34,10 @@ export async function GET(
         inventoryQuantity: productVariants.inventoryQuantity,
         variantOptions: productVariants.variantOptions,
         isActive: productVariants.isActive,
+        outOfStock: productVariants.outOfStock,
       })
       .from(productVariants)
-      .where(
-        and(
-          eq(productVariants.productId, id),
-          eq(productVariants.isActive, true)
-        )
-      );
+      .where(eq(productVariants.productId, id));
 
     // Transform variants for frontend consumption
     const transformedVariants = variants.map((variant) => {
@@ -59,7 +55,8 @@ export async function GET(
         image: variant.image,
         inventoryQuantity: variant.inventoryQuantity,
         attributes: variantOptions,
-        isActive: variant.isActive,
+        isActive: variant.isActive ?? true,
+        outOfStock: variant.outOfStock ?? false,
       };
     });
 
